@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+snake:
+  email: snake@mgs.com
+  password_digest: $2a$12$GvE82KGq5SEPKGDYHtaJlehprvPN0QHhniQWbQceFuh/cOJoq5L.G # "asdf1234"
+
+otacon:
+  email: otacon@mgs.com
+  password_digest: fdsa4321

@@ -1,0 +1,24 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+local: &local
+  <<: *default
+  host: localhost
+  username: postgres
+  password: dejavu
+
+development:
+  <<: *local
+  database: flipcardsapi_development
+
+test:
+  <<: *local
+  database: flipcardsapi_test
+
+production:
+  <<: *default
+  database: flipcardsapi_production
+  username: flipcardsapi
+  password: <%= ENV["FLIPCARDSAPI_DATABASE_PASSWORD"] %>
