@@ -19,6 +19,4 @@ test:
 
 production:
   <<: *default
-  database: flipcardsapi_production
-  username: flipcardsapi
-  password: <%= ENV["FLIPCARDSAPI_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>
