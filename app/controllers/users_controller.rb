@@ -9,7 +9,8 @@ class UsersController < ApplicationController
     user = Auth::Register.new(email, password, password_confirmation).execute
 
     if user
-      head :created
+      session = Auth::Login.new(email, password).execute
+      render json: { token: session.token }, status: :created
     else
       render json: { errors: user.errors }, status: :unprocessable_entity
     end
