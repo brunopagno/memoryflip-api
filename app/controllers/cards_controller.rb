@@ -1,24 +1,13 @@
 class CardsController < ApplicationController
   before_action :authenticate
-
-  def index
-    sorting = params[:sort] || "unsorted"
-
-    cards = current_user.cards
-
-    cards = case sorting
-    when "random"
-      cards.shuffle
-    else
-      cards
-    end
-
-    render json: cards, only: [:id, :front, :back]
-  end
+  before_action :can_access_resource?, only: %i[update destroy]
 
   def create
     card = Card.new(card_params)
-    card.user = current_user
+
+    collection = Collection.find(params[:collection_id])
+    render :unauthorized unless collection.user.id == current_user.id
+
     if card.save
       head :created
     else
@@ -26,18 +15,8 @@ class CardsController < ApplicationController
     end
   end
 
-  def update
-    card = Card.find(params[:id])
-    if card.update(card_params)
-      head :ok
-    else
-      render json: card.errors, status: :unprocessable_entity
-    end
-  end
-
   def destroy
-    card = Card.find(params[:id])
-    if card.destroy
+    if @card.destroy
       head :ok
     else
       head :unprocessable_entity
@@ -46,7 +25,12 @@ class CardsController < ApplicationController
 
   private
 
+  def can_access_resource?
+    @card = Card.find(params[:id])
+    render :unauthorized unless @card.collection.user.id == current_user.id
+  end
+
   def card_params
-    params.require(:card).permit(:front, :back)
+    params.require(:card).permit(:front, :back, :collection_id)
   end
 end
