@@ -1,6 +1,6 @@
 class CardsController < ApplicationController
   before_action :authenticate
-  before_action :can_access_resource?, only: %i[update destroy]
+  before_action :require_access_to_resource, only: %i[destroy]
 
   def create
     card = Card.new(card_params)
@@ -25,12 +25,12 @@ class CardsController < ApplicationController
 
   private
 
-  def can_access_resource?
-    @card = Card.find(params[:id])
-    render :unauthorized unless @card.collection.user.id == current_user.id
-  end
-
   def card_params
     params.require(:card).permit(:front, :back, :collection_id)
+  end
+
+  def require_access_to_resource
+    @card = Card.find(params[:id])
+    render :unauthorized unless @card.collection.user.id == current_user.id
   end
 end
