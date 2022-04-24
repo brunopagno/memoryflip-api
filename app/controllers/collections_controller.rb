@@ -1,25 +1,29 @@
 class CollectionsController < ApplicationController
-  before_action :authenticate
+  before_action :authenticate, except: %i[list]
   before_action :require_access_to_resource, only: %i[update destroy]
   before_action :require_collection_is_empty, only: %i[destroy]
 
   def index
-    render json: current_user.collections, only: %i[id name]
+    render json: current_user.collections, only: %i[id name public]
   end
 
   def list
-    sorting = params[:sort] || 'unsorted'
+    collection = Collection.find(params[:id])
+    if collection.public? || (current_user && current_user.collections.include?(collection))
+      cards = collection.cards
 
-    cards = current_user.collections.find(params[:id]).cards
+      sorting = params[:sort] || 'unsorted'
+      cards = case sorting
+              when 'random'
+                cards.shuffle
+              else
+                cards
+              end
 
-    cards = case sorting
-            when 'random'
-              cards.shuffle
-            else
-              cards
-            end
-
-    render json: cards, only: %i[id front back]
+      render json: cards, only: %i[id front back]
+    else
+      render json: { error: 'You do not have access to this collection' }, status: :unauthorized
+    end
   end
 
   def create
@@ -52,7 +56,7 @@ class CollectionsController < ApplicationController
   private
 
   def collection_params
-    params.require(:collection).permit(:name)
+    params.require(:collection).permit(:name, :public)
   end
 
   def require_access_to_resource
