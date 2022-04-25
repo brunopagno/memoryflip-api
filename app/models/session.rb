@@ -3,4 +3,5 @@ class Session < ApplicationRecord
 
   EXPIRE_TIME = 1.week
   TOKEN_NAME = 'X-Session-Token'.freeze
+  TOKEN_EXPIRED = 'token_expired'.freeze
 end

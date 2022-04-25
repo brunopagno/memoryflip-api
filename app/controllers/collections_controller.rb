@@ -9,7 +9,7 @@ class CollectionsController < ApplicationController
 
   def list
     collection = Collection.find(params[:id])
-    if collection.public? || (current_user && current_user.collections.include?(collection))
+    if collection.public? || current_user&.collections&.include?(collection)
       cards = collection.cards
 
       sorting = params[:sort] || 'unsorted'

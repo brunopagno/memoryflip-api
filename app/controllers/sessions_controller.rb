@@ -14,7 +14,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    if current_user
+    if session_token
       Auth::Logout.new(session_token).execute
       head :ok
     else
